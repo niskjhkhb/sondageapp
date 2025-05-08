@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>{{ user.username }}'s Profile</h1>
+
+    <div>
+        <h3>Profile Information</h3>
+        <p><strong>Bio:</strong> {{ user.profile.bio|default:"No bio available." }}</p>
+        <p><strong>Poll Creator:</strong> {{ user.profile.is_poll_creator|yesno:"Yes,No" }}</p>
+        {% if user.profile.profile_picture %}
+            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="max-width: 200px;">
+        {% else %}
+            <p>No profile picture uploaded.</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <a href="{% url 'home' %}">Back to Home</a>
+    </div>
+</body>
+</html>
