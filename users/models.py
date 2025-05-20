@@ -8,7 +8,7 @@ from django.dispatch import receiver
 #creer un profile lié à l'utilisateur
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="users_profile")
     bio = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     is_poll_creator = models.BooleanField(default=False)
@@ -32,5 +32,5 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 
-    
+
 
