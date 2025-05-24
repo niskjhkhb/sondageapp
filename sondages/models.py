@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 import uuid
 
 # Extended profile for users (optional but useful)
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="sondages_profile")
+class SurveyProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     is_creator = models.BooleanField(default=False)
 
     def __str__(self):
@@ -74,4 +74,3 @@ class Answer(models.Model):
     selected_choices = models.ManyToManyField(Choice, blank=True)
     text_answer = models.TextField(blank=True, null=True)
     scale_value = models.IntegerField(blank=True, null=True)
-

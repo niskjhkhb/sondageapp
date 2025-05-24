@@ -1,36 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from PIL import Image
+
 # Create your models here.
 
-
-#creer un profile lié à l'utilisateur
-
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="users_profile")
-    bio = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
-    is_poll_creator = models.BooleanField(default=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+
     def __str__(self):
-        return f"{self.user.username}'s Profile"
-    
-#le profile se cree auto quand user est creé
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+        return f'{self.user.username} Profile'
 
-#le profile se met à jour quand user est mis à jour
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
-
-
-
-
-
-
-
-
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

@@ -4,9 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.forms.formsets import formset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.contrib import messages
 
-from sondages.models import Survey, Question, Answer, Choice
+from sondages.models import Survey, Question, Answer, Response
 from sondages.forms import SurveyForm, QuestionForm, OptionForm, AnswerForm, BaseAnswerFormSet
 
 
@@ -14,7 +13,7 @@ from sondages.forms import SurveyForm, QuestionForm, OptionForm, AnswerForm, Bas
 def survey_list(request):
     """User can view all their surveys"""
     surveys = Survey.objects.filter(creator=request.user).order_by("-created_at").all()
-    return render(request, "survey/list.html", {"surveys": surveys})
+    return render(request, "sondages/list.html", {"surveys": surveys})
 
 
 @login_required
@@ -42,10 +41,10 @@ def detail(request, pk):
     host = request.get_host()
     public_path = reverse("survey-start", args=[pk])
     public_url = f"{request.scheme}://{host}{public_path}"
-    num_submissions = survey.submission_set.filter(is_complete=True).count()
+    num_submissions = survey.responses.filter().count()
     return render(
         request,
-        "survey/detail.html",
+        "sondages/detail.html",
         {
             "survey": survey,
             "public_url": public_url,
@@ -68,7 +67,7 @@ def create(request):
     else:
         form = SurveyForm()
 
-    return render(request, "survey/create.html", {"form": form})
+    return render(request, "sondages/create.html", {"form": form})
 
 
 @login_required
@@ -97,7 +96,7 @@ def edit(request, pk):
         return redirect("survey-detail", pk=pk)
     else:
         questions = survey.question_set.all()
-        return render(request, "survey/edit.html", {"survey": survey, "questions": questions})
+        return render(request, "sondages/edit.html", {"survey": survey, "questions": questions})
 
 
 @login_required
@@ -114,7 +113,7 @@ def question_create(request, pk):
     else:
         form = QuestionForm()
 
-    return render(request, "survey/question.html", {"survey": survey, "form": form})
+    return render(request, "sondages/question.html", {"survey": survey, "form": form})
 
 
 @login_required
@@ -134,7 +133,7 @@ def option_create(request, survey_pk, question_pk):
     options = question.option_set.all()
     return render(
         request,
-        "survey/options.html",
+        "sondages/options.html",
         {"survey": survey, "question": question, "options": options, "form": form},
     )
 
@@ -143,10 +142,10 @@ def start(request, pk):
     """Survey-taker can start a survey"""
     survey = get_object_or_404(Survey, pk=pk, is_active=True)
     if request.method == "POST":
-        sub = Submission.objects.create(survey=survey)
-        return redirect("survey-submit", survey_pk=pk, sub_pk=sub.pk)
+        response = Response.objects.create(survey=survey)
+        return redirect("survey-submit", survey_pk=pk, sub_pk=response.pk)
 
-    return render(request, "survey/start.html", {"survey": survey})
+    return render(request, "sondages/start.html", {"survey": survey})
 
 
 def submit(request, survey_pk, sub_pk):
@@ -159,8 +158,8 @@ def submit(request, survey_pk, sub_pk):
         raise Http404()
 
     try:
-        sub = survey.submission_set.get(pk=sub_pk, is_complete=False)
-    except Submission.DoesNotExist:
+        response = survey.responses.get(pk=sub_pk)
+    except Response.DoesNotExist:
         raise Http404()
 
     questions = survey.question_set.all()
@@ -173,11 +172,11 @@ def submit(request, survey_pk, sub_pk):
             with transaction.atomic():
                 for form in formset:
                     Answer.objects.create(
-                        option_id=form.cleaned_data["option"], submission_id=sub_pk,
+                        response_id=response.pk,
+                        question=form.cleaned_data.get("question"),
+                        text_answer=form.cleaned_data.get("text_answer", ""),
+                        scale_value=form.cleaned_data.get("scale_value"),
                     )
-
-                sub.is_complete = True
-                sub.save()
             return redirect("survey-thanks", pk=survey_pk)
 
     else:
@@ -186,7 +185,7 @@ def submit(request, survey_pk, sub_pk):
     question_forms = zip(questions, formset)
     return render(
         request,
-        "survey/submit.html",
+        "sondages/submit.html",
         {"survey": survey, "question_forms": question_forms, "formset": formset},
     )
 
@@ -194,14 +193,14 @@ def submit(request, survey_pk, sub_pk):
 def thanks(request, pk):
     """Survey-taker receives a thank-you message."""
     survey = get_object_or_404(Survey, pk=pk, is_active=True)
-    return render(request, "survey/thanks.html", {"survey": survey})
+    return render(request, "sondages/thanks.html", {"survey": survey})
 
 
 @login_required
 def dashboard(request):
     """User can view their dashboard with survey stats"""
     total_surveys = Survey.objects.filter(creator=request.user).count()
-    total_responses = Answer.objects.filter(submission__survey__creator=request.user).count()
+    total_responses = Answer.objects.filter(response__survey__creator=request.user).count()
     active_surveys = Survey.objects.filter(creator=request.user, is_active=True).count()
 
     context = {
@@ -212,207 +211,9 @@ def dashboard(request):
     return render(request, "sondages/dashboard.html", context)
 
 
-@login_required
-def settings(request):
-    """Handle user settings page"""
-    if request.method == 'POST':
-        # Handle form submission
-        user = request.user
-        profile = user.profile
-
-        # Update profile picture if provided
-        if 'profile_picture' in request.FILES:
-            profile.profile_picture = request.FILES['profile_picture']
-
-        # Update display name
-        if 'display_name' in request.POST:
-            user.username = request.POST['display_name']
-
-        # Update bio
-        if 'bio' in request.POST:
-            profile.bio = request.POST['bio']
-
-        # Update email
-        if 'email' in request.POST:
-            user.email = request.POST['email']
-
-        # Update password if provided
-        if 'current_password' in request.POST and 'new_password' in request.POST:
-            if user.check_password(request.POST['current_password']):
-                user.set_password(request.POST['new_password'])
-            else:
-                messages.error(request, 'Current password is incorrect')
-                return redirect('settings')
-
-        # Update notification preferences
-        profile.email_notifications = request.POST.get('email_notifications') == 'on'
-        profile.survey_notifications = request.POST.get('survey_notifications') == 'on'
-        profile.marketing_notifications = request.POST.get('marketing_notifications') == 'on'
-
-        # Update survey defaults
-        profile.default_language = request.POST.get('default_language', 'en')
-        profile.response_anonymous = request.POST.get('response_anonymous') == 'on'
-
-        # Save changes
-        user.save()
-        profile.save()
-
-        messages.success(request, 'Settings updated successfully')
-        return redirect('settings')
-
-    # For GET request, display the settings page with current values
-    context = {
-        'user': request.user,
-        'profile': request.user.profile
-    }
-    return render(request, 'settings.html', context)
-
-
-@login_required
-def create_survey(request):
-    if request.method == 'POST':
-        form = SurveyForm(request.POST)
-        if form.is_valid():
-            survey = form.save(commit=False)
-            survey.creator = request.user
-            survey.save()
-            messages.success(request, 'Survey created successfully!')
-            return redirect('dashboard')
-    else:
-        form = SurveyForm()
-    
-    return render(request, 'sondages/create_survey.html', {'form': form})
-
-
-@login_required
-def create_text_survey(request):
-    """Create a text-based survey"""
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        
-        survey = Survey.objects.create(
-            title=title,
-            description=description,
-            creator=request.user
-        )
-        
-        questions = request.POST.getlist('questions[]')
-        for i, question_text in enumerate(questions):
-            Question.objects.create(
-                survey=survey,
-                text=question_text,
-                question_type='TXT',
-                order=i+1
-            )
-        
-        return JsonResponse({'success': True, 'survey_id': survey.id})
-    
-    return render(request, "sondages/create_text_survey.html")
-
-
-@login_required
-def create_qcm_survey(request):
-    """Create a multiple choice survey"""
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        
-        survey = Survey.objects.create(
-            title=title,
-            description=description,
-            creator=request.user
-        )
-        
-        questions = request.POST.getlist('questions[]')
-        choices = request.POST.getlist('choices[]')
-        
-        for i, question_text in enumerate(questions):
-            question = Question.objects.create(
-                survey=survey,
-                text=question_text,
-                question_type='MC',
-                order=i+1
-            )
-            
-            # Create choices for this question
-            question_choices = choices[i].split(',') if i < len(choices) else []
-            for choice in question_choices:
-                Choice.objects.create(
-                    question=question,
-                    text=choice.strip()
-                )
-        
-        return JsonResponse({'success': True, 'survey_id': survey.id})
-    
-    return render(request, "sondages/create_qcm_survey.html")
-
-
-@login_required
-def create_scale_survey(request):
-    """Create a scale-based survey"""
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        
-        survey = Survey.objects.create(
-            title=title,
-            description=description,
-            creator=request.user
-        )
-        
-        questions = request.POST.getlist('questions[]')
-        min_values = request.POST.getlist('min_values[]')
-        max_values = request.POST.getlist('max_values[]')
-        
-        for i, question_text in enumerate(questions):
-            Question.objects.create(
-                survey=survey,
-                text=question_text,
-                question_type='SCL',
-                order=i+1,
-                min_value=min_values[i] if i < len(min_values) else 1,
-                max_value=max_values[i] if i < len(max_values) else 5
-            )
-        
-        return JsonResponse({'success': True, 'survey_id': survey.id})
-    
-    return render(request, "sondages/create_scale_survey.html")
-
-
-@login_required
-def create_qcu_survey(request):
-    """Create a single choice survey (QCU)"""
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        description = request.POST.get('description')
-        
-        survey = Survey.objects.create(
-            title=title,
-            description=description,
-            creator=request.user
-        )
-        
-        questions = request.POST.getlist('questions[]')
-        choices = request.POST.getlist('choices[]')
-        
-        for i, question_text in enumerate(questions):
-            question = Question.objects.create(
-                survey=survey,
-                text=question_text,
-                question_type='SC',  # Single Choice
-                order=i+1
-            )
-            
-            # Create choices for this question
-            question_choices = choices[i].split(',') if i < len(choices) else []
-            for choice in question_choices:
-                Choice.objects.create(
-                    question=question,
-                    text=choice.strip()
-                )
-        
-        return JsonResponse({'success': True, 'survey_id': survey.id})
-    
-    return render(request, "sondages/create_qcu_survey.html")
+def check_auth(request):
+    """Check if user is authenticated and return status"""
+    return JsonResponse({
+        'is_authenticated': request.user.is_authenticated
+    })
 

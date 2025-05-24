@@ -170,7 +170,7 @@
           </div>
           <h5 class="text-center mb-2">Multiple Choice (QCM)</h5>
           <p class="text-center text-secondary mb-4">Let users select multiple answers for each question</p>
-          <a href="QCM.html" class="btn btn-custom w-100">
+          <a href="{% url 'create-survey' %}?type=qcm" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Create QCM Survey
           </a>
@@ -185,7 +185,7 @@
           </div>
           <h5 class="text-center mb-2">Single Choice (QCU)</h5>
           <p class="text-center text-secondary mb-4">Let users select only one answer per question</p>
-          <a href="QCU.html" class="btn btn-custom w-100">
+          <a href="{% url 'create-survey' %}?type=qcu" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Create QCU Survey
           </a>
@@ -200,7 +200,7 @@
           </div>
           <h5 class="text-center mb-2">Rating Scale</h5>
           <p class="text-center text-secondary mb-4">Let users rate items on a numeric or descriptive scale</p>
-          <a href="SCALE.HTML" class="btn btn-custom w-100">
+          <a href="{% url 'create-survey' %}?type=scale" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Create Scale Survey
           </a>
@@ -215,7 +215,7 @@
           </div>
           <h5 class="text-center mb-2">Text Response</h5>
           <p class="text-center text-secondary mb-4">Let users answer with free-form text</p>
-          <a href="TEXT.html" class="btn btn-custom w-100">
+          <a href="{% url 'create-survey' %}?type=text" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Create Text Survey
           </a>
@@ -230,7 +230,7 @@
           </div>
           <h5 class="text-center mb-2">Mixed Types</h5>
           <p class="text-center text-secondary mb-4">Combine different question types in one survey</p>
-          <a href="mixed.html" class="btn btn-custom w-100">
+          <a href="{% url 'create-survey' %}?type=mixed" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Create Mixed Survey
           </a>

@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -415,15 +417,19 @@
 
   <header>
     <div class="container nav-container d-flex justify-content-between align-items-center">
-      <a href="base.html" class="logo" style="text-decoration:none;">
+      <a href="{% url 'home' %}" class="logo" style="text-decoration:none;">
         <div class="logo">SurveyPro</div>
       </a>
       <nav class="nav">
-        <a class="nav-link" href="dashboard.html"><i class="fas fa-chart-bar me-2"></i>Dashboard</a>
-        <a class="nav-link" href="create_survey.html"><i class="fas fa-plus-circle me-2"></i>Create</a>
+        <a class="nav-link" href="{% url 'dashboard' %}"><i class="fas fa-chart-bar me-2"></i>Dashboard</a>
+        <a class="nav-link" href="{% url 'create-survey' %}"><i class="fas fa-plus-circle me-2"></i>Create</a>
         <a class="nav-link" href="#about"><i class="fas fa-info-circle me-2"></i>About</a>
-        <a class="nav-link" href="login.html"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
-        <a class="nav-link" href="register.html"><i class="fas fa-user-plus me-2"></i>Register</a>
+        {% if user.is_authenticated %}
+          <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+        {% else %}
+          <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-2"></i>Login</a>
+          <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus me-2"></i>Register</a>
+        {% endif %}
         <button id="theme-toggle" class="btn btn-link nav-link">
           <i class="fas fa-moon"></i>
         </button>
