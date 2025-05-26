@@ -1,0 +1,16 @@
+<h2>Tableau de bord</h2>
+
+<p>Bonjour {{ user.username }} !</p>
+
+<h3>Mes sondages</h3>
+
+<ul>
+  {% for sondage in my_sondages %}
+    <li>{{ sondage.title }} (créé le {{ sondage.created_at|date:"d/m/Y H:i" }})</li>
+  {% empty %}
+    <li>Aucun sondage créé pour l’instant.</li>
+  {% endfor %}
+</ul>
+<p><a href="{% url 'create_sondage' %}">Créer un nouveau sondage</a></p>
+<p><a href="{% url 'logout' %}">Se déconnecter</a></p>
+

@@ -5,4 +5,4 @@ from django.shortcuts import render, redirect
 
 #homepage view
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'base.html')
