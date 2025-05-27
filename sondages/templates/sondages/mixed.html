@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Mixed Survey - SurveyPro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      /* Dark theme variables */
+      --primary: #4F46E5;
+      --secondary: #7C3AED;
+      --accent: #06B6D4;
+      --background: #0F172A;
+      --surface: #1E293B;
+      --surface-light: #2D3B55;
+      --text: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
+    :root[data-theme="light"] {
+      --primary: #4F46E5;
+      --secondary: #7C3AED;
+      --accent: #06B6D4;
+      --background: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-light: #F1F5F9;
+      --text: #1E293B;
+      --text-secondary: #64748B;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      padding: 2rem;
+      height: 100vh;
+      position: fixed;
+      transition: all 0.3s ease;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .survey-form {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 16px;
+      margin-top: 2rem;
+    }
+
+    .form-control {
+      background: var(--surface-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .form-control:focus {
+      background: var(--surface-light);
+      border-color: var(--primary);
+      color: var(--text);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    }
+
+    .question-card {
+      background: var(--surface-light);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .question-type-selector {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .type-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .type-option:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: var(--primary);
+    }
+
+    .type-option.selected {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary);
+    }
+
+    .type-option i {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .question-content {
+      margin-top: 1rem;
+    }
+
+    .options-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+      background: var(--surface);
+      padding: 0.75rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .option-item:hover {
+      transform: translateX(5px);
+    }
+
+    .option-handle {
+      color: var(--text-secondary);
+      cursor: move;
+    }
+
+    .option-input {
+      flex: 1;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    .option-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .scale-settings {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .scale-type-selector {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .scale-type-option {
+      background: var(--surface);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+
+    .scale-type-option:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: var(--primary);
+    }
+
+    .scale-type-option.selected {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary);
+    }
+
+    .scale-type-option i {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .scale-preview {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: var(--surface-light);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .scale-points {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scale-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--surface-light);
+      padding: 0 0.5rem;
+    }
+
+    .point-circle {
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      background: var(--surface-light);
+    }
+
+    .scale-line {
+      position: absolute;
+      top: 50%;
+      left: 2rem;
+      right: 2rem;
+      height: 2px;
+      background: var(--primary);
+      z-index: 0;
+      transform: translateY(-50%);
+    }
+
+    .btn-action {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary);
+    }
+
+    .btn-custom {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.4);
+    }
+
+    #scrollToTop {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    #scrollToTop:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #scrollToTop.show {
+      display: flex;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .scale-settings {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 2px solid var(--text-secondary);
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(79, 70, 229, 0.1);
+      transform: scale(1.1);
+    }
+
+    .theme-toggle i {
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .text-settings {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .text-type-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .text-type-option {
+      background: var(--surface-light);
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      text-align: center;
+    }
+
+    .text-type-option:hover {
+      background: rgba(79, 70, 229, 0.1);
+      border-color: var(--primary);
+    }
+
+    .text-type-option.selected {
+      background: rgba(79, 70, 229, 0.2);
+      border-color: var(--primary);
+    }
+
+    .text-type-option i {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .text-preview {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: var(--surface-light);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .text-preview textarea {
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      padding: 1rem;
+      border-radius: 8px;
+      font-style: italic;
+    }
+
+    .text-preview textarea:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .validation-settings {
+      background: var(--surface-light);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .validation-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .validation-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--primary);
+      appearance: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .validation-option input[type="checkbox"]:checked {
+      background: var(--primary);
+    }
+
+    .validation-option input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="base.html" style="text-decoration: none;">
+        <div class="logo">SurveyPro</div>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    <p class="text-secondary mb-4">Create Mixed Survey</p>
+  </aside>
+
+  <main class="main-content">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1>Create Mixed Survey</h1>
+        <p class="text-secondary">Design your mixed-type questions below</p>
+      </div>
+      <div class="d-flex gap-3">
+        <a href="{% url 'create_sondage' %}" class="btn-custom">
+          <i class="fas fa-arrow-left me-2"></i>
+          Back to Survey Types
+        </a>
+        <button class="btn-custom" onclick="saveSurvey()">
+          <i class="fas fa-save"></i>
+          Save Survey
+        </button>
+      </div>
+    </div>
+
+    <div class="survey-form">
+      <div class="mb-4">
+        <label class="form-label">Survey Title</label>
+        <input type="text" class="form-control" placeholder="Enter survey title">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" rows="3" placeholder="Enter survey description"></textarea>
+      </div>
+
+      <div id="questions-container">
+        <!-- Question Card Template -->
+        <div class="question-card">
+          <div class="question-header">
+            <h5>Question 1</h5>
+            <div class="question-actions">
+              <button class="btn-action" onclick="moveQuestion(this, -1)" title="Move Up">
+                <i class="fas fa-arrow-up"></i>
+              </button>
+              <button class="btn-action" onclick="moveQuestion(this, 1)" title="Move Down">
+                <i class="fas fa-arrow-down"></i>
+              </button>
+              <button class="btn-action" onclick="deleteQuestion(this)" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+
+          <label class="form-label">Question Type</label>
+          <select class="form-select" name="question_type" onchange="handleQuestionTypeChange(this)">
+            <option value="text">Text</option>
+            <option value="qcu">Single Choice</option>
+            <option value="qcm">Multiple Choice</option>
+            <option value="scale">Scale</option>
+          </select>
+
+          <label class="form-label">Question Text</label>
+          <input type="text" class="form-control" placeholder="Enter your question">
+
+          <div class="question-body">
+            <!-- Content will be dynamically added here based on question type -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-custom mt-4" onclick="addQuestion()">
+      <i class="fas fa-plus"></i>
+      Add Question
+    </button>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="btn btn-primary rounded-circle position-fixed">
+      <i class="fas fa-arrow-up"></i>
+    </button>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Question counter
+    let questionCount = 1;
+
+    // Add new question
+    function addQuestion() {
+      questionCount++;
+      const questionsContainer = document.getElementById('questions-container');
+      const template = questionsContainer.querySelector('.question-card').cloneNode(true);
+      template.querySelector('h5').textContent = `Question ${questionCount}`;
+
+      // Clear inputs
+      template.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+
+      // Clear options
+      const optionsList = template.querySelector('.options-list');
+      if (optionsList) {
+        while (optionsList.firstChild) {
+          optionsList.removeChild(optionsList.firstChild);
+        }
+      }
+
+      // Add two default options
+      const addOptionButton = template.querySelector('.btn-add-option');
+      if (addOptionButton) {
+        addOption(addOptionButton);
+        addOption(addOptionButton);
+      }
+
+      questionsContainer.appendChild(template);
+    }
+
+    // Delete question
+    function deleteQuestion(btn) {
+      if (document.querySelectorAll('.question-card').length > 1) {
+        btn.closest('.question-card').remove();
+        updateQuestionNumbers();
+      }
+    }
+
+    // Update question numbers
+    function updateQuestionNumbers() {
+      document.querySelectorAll('.question-card').forEach((card, index) => {
+        card.querySelector('h5').textContent = `Question ${index + 1}`;
+      });
+      questionCount = document.querySelectorAll('.question-card').length;
+    }
+
+    // Add new option
+    function addOption(btn) {
+      const optionsList = btn.previousElementSibling;
+      const newOption = document.createElement('li');
+      newOption.className = 'option-item';
+      newOption.innerHTML = `
+        <i class="fas fa-grip-vertical option-handle"></i>
+        <input type="text" class="option-input" placeholder="New Option">
+        <button class="btn-action" onclick="deleteOption(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      optionsList.appendChild(newOption);
+    }
+
+    // Delete option
+    function deleteOption(btn) {
+      const optionsList = btn.closest('.options-list');
+      if (optionsList.children.length > 2) {
+        btn.closest('.option-item').remove();
+      }
+    }
+
+    // Move question up or down
+    function moveQuestion(btn, direction) {
+      const card = btn.closest('.question-card');
+      if (direction < 0 && card.previousElementSibling) {
+        card.parentNode.insertBefore(card, card.previousElementSibling);
+      } else if (direction > 0 && card.nextElementSibling) {
+        card.parentNode.insertBefore(card.nextElementSibling, card);
+      }
+      updateQuestionNumbers();
+    }
+
+    // Function to handle question type change
+    function handleQuestionTypeChange(selectElement) {
+      const card = selectElement.closest('.question-card');
+      const questionType = selectElement.value;
+      const questionBody = card.querySelector('.question-body');
+
+      // Clear existing content
+      questionBody.innerHTML = '';
+
+      // Add content based on question type
+      switch (questionType) {
+        case 'text':
+          questionBody.innerHTML = `
+            <div class="text-settings">
+              <label class="form-label">Text Type</label>
+              <select class="form-select" name="text_type">
+                <option value="short">Short</option>
+                <option value="long">Long</option>
+              </select>
+            </div>
+          `;
+          break;
+        case 'qcu':
+        case 'qcm':
+          questionBody.innerHTML = `
+            <ul class="options-list">
+              <li class="option-item">
+                <i class="fas fa-grip-vertical option-handle"></i>
+                <input type="text" class="option-input" placeholder="New Option">
+                <button class="btn-action" onclick="deleteOption(this)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </li>
+              <li class="option-item">
+                <i class="fas fa-grip-vertical option-handle"></i>
+                <input type="text" class="option-input" placeholder="New Option">
+                <button class="btn-action" onclick="deleteOption(this)">
+                  <i class="fas fa-times"></i>
+                </button>
+              </li>
+            </ul>
+            <button class="btn-add-option" onclick="addOption(this)">
+              <i class="fas fa-plus"></i>
+              Add Option
+            </button>
+          `;
+          break;
+        case 'scale':
+          questionBody.innerHTML = `
+            <div class="scale-settings">
+              <label class="form-label">Min Value</label>
+              <input type="number" class="form-control" name="min_value" value="1">
+              <label class="form-label">Max Value</label>
+              <input type="number" class="form-control" name="max_value" value="5">
+            </div>
+          `;
+          break;
+      }
+    }
+
+    // Save survey
+    function saveSurvey() {
+      const surveyTitle = document.querySelector('input[placeholder="Enter survey title"]').value;
+      const surveyDescription = document.querySelector('textarea[placeholder="Enter survey description"]').value;
+      const questions = [];
+
+      document.querySelectorAll('.question-card').forEach((card, index) => {
+        const questionText = card.querySelector('input[placeholder="Enter your question"]').value;
+        const questionType = card.querySelector('select[name="question_type"]').value; // Get the selected question type
+
+        let options = [];
+        if (questionType === 'qcu' || questionType === 'qcm') {
+          card.querySelectorAll('.option-item input[type="text"]').forEach(input => {
+            options.push(input.value);
+          });
+        }
+
+        let textType = null;
+        if (questionType === 'text') {
+          textType = card.querySelector('select[name="text_type"]').value;
+        }
+
+        let minValue = null;
+        let maxValue = null;
+        if (questionType === 'scale') {
+          minValue = card.querySelector('input[name="min_value"]').value;
+          maxValue = card.querySelector('input[name="max_value"]').value;
+        }
+
+        questions.push({
+          questionText: questionText,
+          questionType: questionType,
+          options: options,
+          textType: textType,
+          minValue: minValue,
+          maxValue: maxValue
+        });
+      });
+
+      const data = {
+        surveyTitle: surveyTitle,
+        surveyDescription: surveyDescription,
+        questions: questions
+      };
+
+      // Send data to server using AJAX
+      fetch("{% url 'save_mixed_sondage' %}", { // Replace 'save_mixed_sondage' with your URL name
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          alert('Survey saved successfully!');
+          window.location.href = "{% url 'dashboard' %}"; // Redirect to dashboard
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while saving the survey.');
+        });
+    }
+
+    // Scroll to Top functionality
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+
+    window.addEventListener('scroll', function () {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.add('show');
+      } else {
+        scrollToTopBtn.classList.remove('show');
+      }
+    });
+
+    scrollToTopBtn.addEventListener('click', function () {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = themeToggle.querySelector('i');
+
+      // Check for saved theme preference or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      });
+
+      function updateThemeIcon(theme) {
+        themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+      }
+    });
+  </script>
+</body>
+
+</html>

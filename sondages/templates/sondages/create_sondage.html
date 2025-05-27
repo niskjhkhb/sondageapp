@@ -1,57 +1,73 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Survey - SurveyPro</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="/static/js/theme.js"></script>
-  
-  <style>
-    /* Paste the same CSS styles you have in your base here, or import the CSS separately */
-    /* For brevity, only critical styles below (you can add full styles from your base) */
 
+  <style>
     :root {
+      /* Dark theme variables */
       --primary: #4F46E5;
       --secondary: #7C3AED;
       --accent: #06B6D4;
       --background: #0F172A;
       --surface: #1E293B;
+      --surface-light: #2D3B55;
       --text: #F8FAFC;
       --text-secondary: #94A3B8;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
     }
+
+    :root[data-theme="light"] {
+      --primary: #4F46E5;
+      --secondary: #7C3AED;
+      --accent: #06B6D4;
+      --background: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-light: #F1F5F9;
+      --text: #1E293B;
+      --text-secondary: #64748B;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Poppins', sans-serif;
     }
+
     body {
       background: var(--background);
       color: var(--text);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-     
-     
     }
-    header {
-      background: rgba(30, 41, 59, 0.8);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      position: static;
-      width: 100%;
-      z-index: 1000;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      padding: 2rem;
+      height: 100vh;
+      position: fixed;
+      transition: all 0.3s ease;
     }
+
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+    }
+
     .logo {
       font-size: 1.8rem;
       font-weight: 700;
@@ -59,129 +75,187 @@
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-decoration: none;
-    }
-    nav a {
-      color: var(--text-secondary);
-      font-weight: 500;
-      margin-left: 1rem;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-    nav a:hover {
-      color: var(--text);
-    }
-    main {
-      flex-grow: 1;
-      padding: 2rem;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-    h1 {
-      font-weight: 700;
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-align: center;
-    }
-    form {
-      background: var(--surface);
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(79, 70, 229, 0.2);
-    }
-    label {
-      display: block;
       margin-bottom: 0.5rem;
-      font-weight: 600;
-      color: var(--text);
     }
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 8px;
-      border: none;
-      background: var(--background);
-      color: var(--text);
+
+    .survey-type-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2rem;
       margin-bottom: 1.5rem;
-      font-size: 1rem;
-      font-family: 'Poppins', sans-serif;
-      resize: vertical;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      min-height: 200px;
     }
-    textarea {
-      min-height: 100px;
+
+    .survey-type-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border-color: var(--primary);
     }
-    button[type="submit"] {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+
+    .icon-wrapper {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin: 0 auto 1rem auto;
       color: white;
-      padding: 1rem 2.5rem;
-      font-size: 1.1rem;
-      font-weight: 500;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      display: block;
-      margin: 0 auto;
     }
-    button[type="submit"]:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4);
+
+    .btn-custom {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-custom:hover {
+      background: var(--surface-light);
+      color: var(--text);
+      border-color: var(--primary);
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(79, 70, 229, 0.1);
+      transform: scale(1.1);
+    }
+
+    .theme-toggle i {
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
     }
   </style>
 </head>
 <body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="{% url 'home' %}" style="text-decoration: none;">
+        <div class="logo">SurveyPro</div>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    <p class="text-secondary mb-4">Create New Survey</p>
+  </aside>
 
-<header>
-  <a href="{% url 'home' %}" class="logo">SurveyPro</a>
-  <nav>
-    <a href="{% url 'dashboard' %}"><i class="fas fa-chart-bar"></i> Dashboard</a>
-    <a href="{% url 'create_sondage' %}"><i class="fas fa-plus-circle"></i> Create</a>
-    <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-  </nav>
-</header>
+  <main class="main-content">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1>Create New Survey</h1>
+        <p class="text-secondary">Choose the type of survey you want to create</p>
+      </div>
+    </div>
 
-<main>
-  <h1>Create a New Survey</h1>
-  <form method="post" action="{% url 'create_sondage' %}">
-    {% csrf_token %}
-    <label for="title">Survey Title</label>
-    <input type="text" id="title" name="title" placeholder="Enter survey title" required>
+    <div class="row g-4 mt-4">
+      <!-- QCM -->
+      <div class="col-md-6 col-lg-4">
+        <div class="survey-type-card">
+          <div class="icon-wrapper" style="background: linear-gradient(135deg, var(--primary), var(--accent));">
+            <i class="fas fa-list-check fa-2x"></i>
+          </div>
+          <h5 class="text-center mb-2">Multiple Choice (QCM)</h5>
+          <p class="text-center text-secondary mb-4">Let users select multiple answers for each question</p>
+          <a href="{% url 'QCM' %}?type=qcm" class="btn btn-custom">
+            <i class="fas fa-plus me-2"></i>
+            Create QCM Survey
+          </a>
+        </div>
+      </div>
 
-    <label for="description">Description</label>
-    <textarea id="description" name="description" placeholder="Enter survey description" required></textarea>
+      <!-- QCU -->
+      <div class="col-md-6 col-lg-4">
+        <div class="survey-type-card">
+          <div class="icon-wrapper" style="background: linear-gradient(135deg, var(--success), #059669);">
+            <i class="fas fa-dot-circle fa-2x"></i>
+          </div>
+          <h5 class="text-center mb-2">Single Choice (QCU)</h5>
+          <p class="text-center text-secondary mb-4">Let users select only one answer per question</p>
+          <a href="{% url 'QCU' %}?type=qcu" class="btn btn-custom">
+            <i class="fas fa-plus me-2"></i>
+            Create QCU Survey
+          </a>
+        </div>
+      </div>
 
-    <label for="category">Category</label>
-    <select id="category" name="category" required>
-      <option value="">Select a category</option>
-      <option value="business">Business</option>
-      <option value="education">Education</option>
-      <option value="technology">Technology</option>
-      <option value="health">Health</option>
-      <option value="other">Other</option>
-    </select>
-<label>Primary Color</label>
-<input type="color" name="primary_color" value="#4F46E5">
+      <!-- Scale -->
+      <div class="col-md-6 col-lg-4">
+        <div class="survey-type-card">
+          <div class="icon-wrapper" style="background: linear-gradient(135deg, var(--warning), #D97706);">
+            <i class="fas fa-sliders-h fa-2x"></i>
+          </div>
+          <h5 class="text-center mb-2">Rating Scale</h5>
+          <p class="text-center text-secondary mb-4">Let users rate items on a numeric or descriptive scale</p>
+          <a href="{% url 'SCALE' %}?type=scale" class="btn btn-custom">
+            <i class="fas fa-plus me-2"></i>
+            Create Scale Survey
+          </a>
+        </div>
+      </div>
 
-<label>Background Color</label>
-<input type="color" name="background_color" value="#ffffff">
+      <!-- Text -->
+      <div class="col-md-6 col-lg-4">
+        <div class="survey-type-card">
+          <div class="icon-wrapper" style="background: linear-gradient(135deg, #0EA5E9, #38BDF8);">
+            <i class="fas fa-font fa-2x"></i>
+          </div>
+          <h5 class="text-center mb-2">Text Response</h5>
+          <p class="text-center text-secondary mb-4">Let users answer with free-form <br> text</p>
+          <a href="{% url 'TEXT' %}?type=text" class="btn btn-custom">
+            <i class="fas fa-plus me-2"></i>
+            Create Text Survey
+          </a>
+        </div>
+      </div>
 
-<label>Font Family</label>
-<select name="font_family">
-  <option value="Poppins">Poppins</option>
-  <option value="Arial">Arial</option>
-  <option value="Roboto">Roboto</option>
-</select>
+      <!-- Mixed -->
+      <div class="col-md-6 col-lg-4">
+        <div class="survey-type-card">
+          <div class="icon-wrapper" style="background: linear-gradient(135deg, #334155, #0F172A);">
+            <i class="fas fa-layer-group fa-2x"></i>
+          </div>
+          <h5 class="text-center mb-2">Mixed Types</h5>
+          <p class="text-center text-secondary mb-4">Combine different question types in one survey</p>
+          <a href="{% url 'mixed' %}?type=mixed" class="btn btn-custom">
+            <i class="fas fa-plus me-2"></i>
+            Create Mixed Survey
+          </a>
+        </div>
+      </div>
 
-    <button type="submit">Create Survey</button>
-  </form>
-  
-</main>
+    
+    </div>
+  </main>
 
+  <script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    
+    themeToggle.addEventListener('click', () => {
+      if (root.getAttribute('data-theme') === 'light') {
+        root.removeAttribute('data-theme');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      } else {
+        root.setAttribute('data-theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    });
+  </script>
 </body>
-</html>
+</html> 

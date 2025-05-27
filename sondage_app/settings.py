@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-e+c2oqdx5ak(k^yfpff4xrcwuufpmks+n9@xawgv=b2xfe5$bq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'sondage_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dbsondage',
+        'NAME': 'sondagesdb',
         'USER': 'root',
         'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': 'localhost',

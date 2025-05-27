@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -355,6 +357,7 @@
           <tr>
             <th>Titre</th>
             <th>Date de création</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -362,6 +365,12 @@
             <tr>
               <td>{{ sondage.title }}</td>
               <td>{{ sondage.created_at|date:"d/m/Y H:i" }}</td>
+              <td>
+                <a href="{% url 'survey_details' sondage_id=sondage.id %}" class="btn btn-sm btn-outline-info">Details</a>
+                <a href="{% url 'update_sondage' sondage_id=sondage.id %}" class="btn btn-sm btn-outline-warning">Update</a>
+                <a href="{% url 'delete_sondage' sondage_id=sondage.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                <a href="{% url 'survey_results' sondage_id=sondage.id %}" class="btn btn-sm btn-outline-success">Results</a>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
@@ -474,4 +483,4 @@
     });
   </script>
 </body>
-</html> 
+</html>

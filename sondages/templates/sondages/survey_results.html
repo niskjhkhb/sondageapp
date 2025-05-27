@@ -1,0 +1,186 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Results - {{ sondage.title }} - SurveyPro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #7C3AED;
+            --accent: #06B6D4;
+            --background: #0F172A;
+            --surface: #1E293B;
+            --surface-light: #2D3B55;
+            --text: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            background: var(--surface);
+            color: var(--text);
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+          <!-- Back to Dashboard Button -->
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Survey Results - {{ sondage.title }}</h1>
+                <p>Number of responses: {{ num_responses }}</p>
+
+                <!-- Export Buttons -->
+                <a href="{% url 'export_responses' sondage_id=sondage.id %}" class="btn btn-success">
+                    <i class="fas fa-file-export"></i> Export Responses (CSV)
+                </a>
+                <a href="{% url 'export_responses_excel' sondage_id=sondage.id %}" class="btn btn-info">
+                    <i class="fas fa-file-excel"></i> Export Responses (Excel)
+                </a>
+
+                <div class="mt-4">
+                    <h3>Example Question: Do you like surveys?</h3>
+                    <div class="chart-container">
+                        <canvas id="exampleChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+
+                {% if chart_data %}
+                    {% for data in chart_data %}
+                        <div class="mt-4">
+                            <h3>{{ data.question_text }}</h3>
+                            {% if data.chart_type == 'text' %}
+                                <ul>
+                                    {% for response in data.responses %}
+                                        <li>{{ response }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="chart-container">
+                                    <canvas id="chart_{{ forloop.counter }}" width="400" height="400"></canvas>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No results to display yet.</p>
+                {% endif %}
+
+              
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Example Chart
+            var ctxExample = document.getElementById('exampleChart').getContext('2d');
+            var exampleChart = new Chart(ctxExample, {
+                type: 'pie',
+                data: {
+                    labels: ['Yes', 'No'],
+                    datasets: [{
+                        label: 'Responses',
+                        data: [70, 30], // Example data
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+
+            {% for data in chart_data %}
+                {% if data.chart_type != 'text' %}
+                    var ctx = document.getElementById('chart_{{ forloop.counter }}').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: '{{ data.chart_type }}',
+                        data: {
+                            labels: {{ data.labels|safe }},
+                            datasets: [{
+                                label: 'Responses',
+                                data: {{ data.values|safe }},
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)',
+                                    'rgba(255, 206, 86, 0.6)',
+                                    'rgba(75, 192, 192, 0.6)',
+                                    'rgba(153, 102, 255, 0.6)',
+                                    'rgba(255, 159, 64, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                {% endif %}
+            {% endfor %}
+        });
+    </script>
+</body>
+</html>

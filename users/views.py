@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 
 def profile(request):
     if request.user.is_authenticated:
-        return render(request, 'users/profile.html')
+        return render(request, 'users/settings.html')
     else:
         messages.error(request, 'You need to be logged in to view this page.')
         return redirect('login')

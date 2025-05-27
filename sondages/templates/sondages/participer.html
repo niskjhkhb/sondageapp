@@ -38,7 +38,7 @@
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(255, 255, 255, 0.05);
-      color: #F8FAFC;
+      color:rgb(0, 0, 0);
       font-size: 1rem;
       margin-bottom: 1rem;
     }
@@ -69,33 +69,33 @@
     <h1>{{ sondage.title }}</h1>
     <p>{{ sondage.description }}</p>
 
-    <form method="POST" action="{% url 'participer_sondage' sondage.id %}">
+    <form method="POST" action="{% url 'participer_sondage' sondage.shareable_link %}">
       {% csrf_token %}
 
       {% for question in questions %}
         <div class="question">
-          <label for="question_{{ question.id }}">{{ question.question_text }}</label>
+          <label for="question_{{ question.id }}">{{ question.text }}</label>
 
-          {% if question.question_type == 'tx' %}
+          {% if question.question_type == 'text' %}
             <input type="text" name="reponse_{{ question.id }}" id="question_{{ question.id }}" required>
 
-          {% elif question.question_type == 'sc' %}
-            {% for choice in question.choice_set.all %}
+          {% elif question.question_type == 'qcu' %}
+            {% for choice in question.choices.all %}
               <div class="choice-item">
                 <input type="radio" name="reponse_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}" required>
-                <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                <label for="choice_{{ choice.id }}">{{ choice.text }}</label>
               </div>
             {% endfor %}
 
-          {% elif question.question_type == 'mc' %}
-            {% for choice in question.choice_set.all %}
+          {% elif question.question_type == 'qcm' %}
+            {% for choice in question.choices.all %}
               <div class="choice-item">
                 <input type="checkbox" name="reponse_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
-                <label for="choice_{{ choice.id }}">{{ choice.choice_text }}</label>
+                <label for="choice_{{ choice.id }}">{{ choice.text }}</label>
               </div>
             {% endfor %}
 
-          {% elif question.question_type == 'scale' %}
+          {% elif question.question_type == 'scal' %}
             <select name="reponse_{{ question.id }}" id="question_{{ question.id }}" required>
               {% for i in question.scale_range %}
                 <option value="{{ i }}">{{ i }}</option>

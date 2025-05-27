@@ -442,10 +442,10 @@
       <div class="hero-content">
         <h1 class="hero-title">Create Surveys That Matter</h1>
         <p class="hero-description">Transform your ideas into powerful surveys. Get meaningful insights with our intuitive platform designed for professionals like you.</p>
-        <a href="{% url 'login'%}" class="btn btn-custom">
-          Get Started
-          <i class="fas fa-arrow-right ms-2"></i>
-        </a>
+             <a href="{% if user.is_authenticated %}{% url 'create_sondage' %}{% else %}{% url 'login' %}{% endif %}" class="btn btn-custom">
+        Get Started
+        <i class="fas fa-arrow-right ms-2"></i>
+      </a>
         
         <div class="features-grid">
           <div class="feature-card">

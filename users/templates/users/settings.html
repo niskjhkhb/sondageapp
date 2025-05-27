@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - SurveyPro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Dark theme variables */
+      --primary: #4F46E5;
+      --secondary: #7C3AED;
+      --accent: #06B6D4;
+      --background: #0F172A;
+      --surface: #1E293B;
+      --surface-light: #2D3B55;
+      --text: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
+    :root[data-theme="light"] {
+      --primary: #4F46E5;
+      --secondary: #7C3AED;
+      --accent: #06B6D4;
+      --background: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-light: #F1F5F9;
+      --text: #1E293B;
+      --text-secondary: #64748B;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      padding: 2rem;
+      height: 100vh;
+      position: fixed;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 0;
+    }
+
+    .nav-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text);
+      background: rgba(79, 70, 229, 0.1);
+    }
+
+    .nav-link i {
+      width: 20px;
+      margin-right: 0.75rem;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+    }
+
+    .settings-header {
+      margin-bottom: 2rem;
+    }
+
+    .settings-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-card h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .form-control {
+      background: var(--surface-light);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+    }
+
+    .form-check {
+      margin-bottom: 1rem;
+    }
+
+    .form-check-input {
+      background-color: var(--surface-light);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .form-check-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .form-check-label {
+      color: var(--text-secondary);
+    }
+
+    .btn-custom {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-danger-custom {
+      background: var(--danger);
+      color: white;
+    }
+
+    .profile-picture {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1rem;
+    }
+
+    .upload-btn-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .upload-btn-wrapper input[type=file] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .theme-toggle {
+      background: transparent;
+      border: 2px solid var(--text-secondary);
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(79, 70, 229, 0.1);
+      transform: scale(1.1);
+    }
+
+    .theme-toggle i {
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="{% url 'home'%}" style="text-decoration: none;">
+        <div class="logo">SurveyPro</div>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="{% url 'dashboard'%}" class="nav-link">
+          <i class="fas fa-home"></i>
+          Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'my-surveys'%}" class="nav-link">
+          <i class="fas fa-poll"></i>
+          Surveys
+        </a>
+      </li>
+  
+      <li class="nav-item">
+        <a href="settings.html" class="nav-link active">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="settings-header">
+      <h1>Settings</h1>
+      <p class="text-secondary">Manage your account and preferences</p>
+    </div>
+
+    <form id="settingsForm" action="/settings" method="POST" enctype="multipart/form-data">
+      <div class="settings-card">
+        <h3>Profile Settings</h3>
+        <div class="form-group">
+          <img src="https://via.placeholder.com/100" alt="Profile Picture" class="profile-picture" id="profilePreview">
+          <div class="upload-btn-wrapper">
+            <button type="button" class="btn-custom">
+              <i class="fas fa-camera"></i>
+              Change Photo
+            </button>
+            <input type="file" name="profile_picture" id="profilePicture" accept="image/*">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Display Name</label>
+          <input type="text" class="form-control" name="display_name" placeholder="Your display name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" name="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Account Settings</h3>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" name="email" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-control" name="current_password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-control" name="new_password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-control" name="confirm_password">
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Notification Settings</h3>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="emailNotif" name="email_notifications">
+          <label class="form-check-label" for="emailNotif">Email Notifications</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="surveyNotif" name="survey_notifications">
+          <label class="form-check-label" for="surveyNotif">Survey Completion Notifications</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="marketingNotif" name="marketing_notifications">
+          <label class="form-check-label" for="marketingNotif">Marketing Updates</label>
+        </div>
+      </div>
+
+      <div class="settings-card">
+        <h3>Survey Defaults</h3>
+        <div class="form-group">
+          <label class="form-label">Default Survey Language</label>
+          <select class="form-control" name="default_language">
+            <option value="en">English</option>
+            <option value="es">Spanish Español</option>
+            <option value="fr">French Français</option>
+            <option value="de">Arabic العربية</option>
+          </select>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="responseAnon" name="response_anonymous">
+          <label class="form-check-label" for="responseAnon">Make responses anonymous by default</label>
+        </div>
+      </div>
+
+      <div class="d-flex gap-3 mt-4">
+        <button type="submit" class="btn-custom">
+          <i class="fas fa-save"></i>
+          Save Changes
+        </button>
+        <button type="button" class="btn-custom btn-danger-custom">
+          <i class="fas fa-trash"></i>
+          Delete Account
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    // Profile picture preview
+    document.getElementById('profilePicture').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('profilePreview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuBtn = document.createElement('button');
+      menuBtn.className = 'menu-toggle';
+      menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+      menuBtn.style.cssText = `
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1001;
+        background: var(--surface);
+        border: none;
+        color: var(--text);
+        padding: 0.5rem;
+        border-radius: 8px;
+        display: none;
+      `;
+
+      document.body.appendChild(menuBtn);
+
+      const sidebar = document.querySelector('.sidebar');
+      const mainContent = document.querySelector('.main-content');
+
+      function toggleMenu() {
+        sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' 
+          ? 'translateX(-100%)' 
+          : 'translateX(0)';
+      }
+
+      menuBtn.addEventListener('click', toggleMenu);
+
+      function handleResize() {
+        if (window.innerWidth <= 1024) {
+          menuBtn.style.display = 'block';
+          sidebar.style.transform = 'translateX(-100%)';
+          mainContent.style.marginLeft = '0';
+        } else {
+          menuBtn.style.display = 'none';
+          sidebar.style.transform = 'translateX(0)';
+          mainContent.style.marginLeft = '280px';
+        }
+      }
+
+      window.addEventListener('resize', handleResize);
+      handleResize();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = themeToggle.querySelector('i');
+      
+      // Check for saved theme preference or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+      
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      });
+      
+      function updateThemeIcon(theme) {
+        themeIcon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+      }
+    });
+  </script>
+</body>
+</html> 
